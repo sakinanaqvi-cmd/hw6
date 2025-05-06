@@ -351,11 +351,13 @@ void HashTable<K,V,Prober,Hash,KEqual>::insert(const ItemType& p)
         HashItem * curr = internalFind(p.first);
         if (curr) {
             curr->item.second = p.second;
+            delete newHash;
         } else {
             table_[probeInd] = newHash;
             ++tableSize;
         }
     } else {
+        delete newHash;
         throw std::logic_error("Could not find location");
     }
 
@@ -454,16 +456,12 @@ void HashTable<K,V,Prober,Hash,KEqual>::resize()
     table_.resize(CAPACITIES[mIndex_], nullptr);
 
     //reinsert the items from the old table
-    for (size_t i = 0; i < newTab.size(); ++i) {
-        auto& item = newTab[i];
-        if(!item) {
-            delete item;
-            continue;
-        }
+    for (auto& item : newTab) {
+        if(!item) continue;
         if(!item->deleted) {
             table_[this->probe(item->item.first)] = item;
             tableSize++;
-        }
+        } else delete item;
    }
 }
 
