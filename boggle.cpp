@@ -94,6 +94,42 @@ std::set<std::string> boggle(const std::set<std::string>& dict, const std::set<s
 bool boggleHelper(const std::set<std::string>& dict, const std::set<std::string>& prefix, const std::vector<std::vector<char> >& board, 
 								   std::string word, std::set<std::string>& result, unsigned int r, unsigned int c, int dr, int dc)
 {
-//add your solution here!
+	if(word.empty()) {
+    //current board char is added to word if empty
+		word = word + board[r][c];
+		return boggleHelper(dict, prefix, board, word, result, dr + r, dc + c, dr, dc);
+	}
 
+	if(r < board.size() && c < board[0].size()) {
+
+	} else {
+    //check if word is out of bounds
+		if(dict.count(word)) {
+			result.insert(word);
+			return true;
+		}
+		return false;
+	}
+	
+  //check if word is a prefix and valid word in dict
+	if(prefix.count(word) == 0) {
+		bool isVal = dict.count(word) > 0;
+		if(isVal) {
+			result.insert(word);
+		} 
+		return isVal;
+	}
+	
+	word = word + board[r][c];
+
+	if(!boggleHelper(dict, prefix, board, word, result, dr + r, dc + c, dr, dc)) {
+		bool isVal = dict.count(word) > 0;
+    //check if word is valid in the case recursive search fails
+		if(isVal) {
+			result.insert(word);
+		} 
+		return isVal;
+	}
+	return true;
+	
 }
